@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # This script automates the creation and registration of a Github self-hosted runner within a Proxmox LXC (Linux Container).
-# The runner is based on Ubuntu 23.04. Before running the script, ensure you have your GITHUB_TOKEN 
-# and the OWNERREPO (github owner/repository) available.
+# The runner is based on Ubuntu 24.10. Before running the script, ensure you have your RUNNER_TOKEN
+# and the OWNER (github owner/username) available.
 
 set -e
 
@@ -18,17 +18,13 @@ PCT_STORAGE="local-lvm"
 DEFAULT_IP_ADDR="192.168.0.220/24"
 DEFAULT_GATEWAY="192.168.0.1"
 
-# Ask for GitHub token and owner/repo if they're not set
-#if [ -z "$GITHUB_TOKEN" ]; then
-#    read -r -p "Enter github token: " GITHUB_TOKEN
-#    echo
-#fi
-if [ -z "$OWNERREPO" ]; then
-    read -r -p "Enter github owner/repo: " OWNERREPO
+# Ask for owner and runner token if they're not set
+if [ -z "$OWNER" ]; then
+    read -r -p "Enter github owner/username: " OWNER
     echo
 fi
 if [ -z "$RUNNER_TOKEN" ]; then
-    read -r -p "Enter  runner token: " RUNNER_TOKEN
+    read -r -p "Enter runner token: " RUNNER_TOKEN
     echo
 fi
 
@@ -83,23 +79,12 @@ pct exec "$PCTID" -- bash -c "apt update -y && apt install -y git curl zip && pa
 log "-- Installing docker"
 pct exec "$PCTID" -- bash -c "curl -qfsSL https://get.docker.com | sh"
 
-# Get runner installation token
-#log "-- Getting runner installation token"
-#RES=$(curl -q -L \
-#  -X POST \
-#  -H "Accept: application/vnd.github+json" \
-#  -H "Authorization: Bearer $GITHUB_TOKEN"  \
-#  -H "X-GitHub-Api-Version: 2022-11-28" \
-#  https://api.github.com/repos/$OWNERREPO/actions/runners/registration-token)
-
-#RUNNER_TOKEN=$(echo $RES | grep -o '"token": "[^"]*' | grep -o '[^"]*$')
-
 # Install and start the runner
 log "-- Installing runner"
 pct exec "$PCTID" -- bash -c "mkdir actions-runner && cd actions-runner &&\
     curl -o $GITHUB_RUNNER_FILE -L $GITHUB_RUNNER_URL &&\
     tar xzf $GITHUB_RUNNER_FILE &&\
-    RUNNER_ALLOW_RUNASROOT=1 ./config.sh --unattended --url https://github.com/$OWNERREPO --token $RUNNER_TOKEN &&\
+    RUNNER_ALLOW_RUNASROOT=1 ./config.sh --unattended --url https://github.com/$OWNER --token $RUNNER_TOKEN &&\
     ./svc.sh install root &&\
     ./svc.sh start"
 
