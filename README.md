@@ -1,3 +1,5 @@
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://buymeacoffee.com/detperalta)
+
 # GitHub Runner LXC Installer
 
 This script automates the creation and registration of a GitHub self-hosted runner within a Proxmox LXC (Linux Container).
