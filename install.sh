@@ -62,7 +62,8 @@ pct create "$PCTID" "$TEMPL_FILE" \
    -swap $PCT_SWAP \
    -storage $PCT_STORAGE \
    -features nesting=1,keyctl=1 \
-   -net0 name=eth0,bridge=vmbr0,gw="$GATEWAY",ip="$IP_ADDR",type=veth
+   -net0 name=eth0,bridge=vmbr0,gw="$GATEWAY",ip="$IP_ADDR",type=veth \
+   -unprivileged 0
 
 # Resize the container
 log "-- Resizing container to $PCTSIZE"
