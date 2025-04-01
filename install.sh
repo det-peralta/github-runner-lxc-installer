@@ -79,6 +79,14 @@ fi
 GITHUB_URL="https://github.com/$OWNER"
 log "-- Using GitHub URL: $GITHUB_URL"
 
+# Run updates and install dependencies inside the container
+log "-- Running updates"
+pct exec "$CTID" -- bash -c "apt update -y && apt install -y git curl zip && passwd -d root"
+
+# Install Docker inside the container
+log "-- Installing docker"
+pct exec "$CTID" -- bash -c "curl -qfsSL https://get.docker.com | sh"
+
 # Install and start the runner
 log "-- Installing runner" 
 pct exec "$CTID" -- bash -c "mkdir -p actions-runner && cd actions-runner && \
